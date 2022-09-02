@@ -1,7 +1,19 @@
+from unicodedata import category
 from django.shortcuts import render
+from .models import Customer, Product, OrderPlaced, Cart
+from django.views import View
 
-def home(request):
- return render(request, 'app/home.html')
+class ProductView(View):
+    def get(self, request):
+        mobiles = Product.objects.filter(category='M')
+        laptops = Product.objects.filter(category='L')
+        topwears = Product.objects.filter(category='TW')
+        bottomwears = Product.objects.filter(category='BW')
+
+        return render(request, 'app/home.html', {
+            'mobiles':mobiles, 'laptops':laptops,
+            'topwears': topwears, 'bottomwears':bottomwears
+        })
 
 def product_detail(request):
  return render(request, 'app/productdetail.html')
