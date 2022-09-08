@@ -15,8 +15,9 @@ class ProductView(View):
             'topwears': topwears, 'bottomwears':bottomwears
         })
 
-def product_detail(request):
- return render(request, 'app/productdetail.html')
+def product_detail(request, pk):
+    product = Product.objects.get(pk=pk)
+    return render(request, 'app/productdetail.html', {'product':product})
 
 def add_to_cart(request):
  return render(request, 'app/addtocart.html')
