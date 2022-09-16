@@ -1,9 +1,11 @@
 from unicodedata import category
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Customer, Product, OrderPlaced, Cart
 from .forms import CustomerProfileForm, CustomerRegistrationForm
 from django.views import View
 from django.contrib import messages
+from django.db.models import Q
+from django.http import JsonResponse
 
 class ProductView(View):
     def get(self, request):
@@ -22,7 +24,31 @@ def product_detail(request, pk):
     return render(request, 'app/productdetail.html', {'product':product})
 
 def add_to_cart(request):
- return render(request, 'app/addtocart.html')
+    user = request.user
+    product_id = request.GET.get('prod_id')
+    product = Product.objects.get(id=product_id)
+    try:
+        existing_cart = Cart.objects.get(product=product)
+        existing_cart.quantity += 1
+        existing_cart.save()
+    except:
+        Cart(user=user, product=product).save()
+    return redirect("/cart")
+
+def show_cart(request):
+    if request.user.is_authenticated:
+        user = request.user
+        cart = Cart.objects.filter(user=user)
+        if not cart:
+            return render(request, 'app/empty.html')
+        amount = 0.0
+        shipping_amount = 40.0
+        total = 0.0
+        for temp_cart in cart:
+            amount += temp_cart.quantity*temp_cart.product.discounted_price
+        total = shipping_amount + amount
+
+        return render(request, 'app/addtocart.html', {'carts':cart, 'amount':amount, 'shipping_amount':shipping_amount, 'total':total})
 
 def buy_now(request):
  return render(request, 'app/buynow.html')
@@ -81,6 +107,75 @@ class ProfileView(View):
             reg.save()
             messages.success(request, "Congratulations!! Profile Updated Successfully")
         return render(request, 'app/profile.html', {'form':form})
+
+
+def plus_cart(request):
+    if request.method == 'GET':
+        prod_id = request.GET['prod_id']
+        product = Product.objects.get(id=prod_id)
+        c = Cart.objects.get(Q(product=product) & Q(user=request.user))
+        c.quantity += 1
+        c.save()
+        cart = Cart.objects.filter(user=request.user)
+        amount = 0.0
+        shipping_amount = 40.0
+        total = 0.0
+        for temp_cart in cart:
+            amount += temp_cart.quantity*temp_cart.product.discounted_price
+        total = shipping_amount + amount
+
+        data = {
+            'quantity': c.quantity,
+            'amount': amount,
+            'total': total
+        }
+
+        return JsonResponse(data)
+
+def minus_cart(request):
+    if request.method == 'GET':
+        prod_id = request.GET['prod_id']
+        product = Product.objects.get(id=prod_id)
+        c = Cart.objects.get(Q(product=product) & Q(user=request.user))
+        c.quantity -= 1
+        c.save()
+        cart = Cart.objects.filter(user=request.user)
+        amount = 0.0
+        shipping_amount = 40.0
+        total = 0.0
+        for temp_cart in cart:
+            amount += temp_cart.quantity*temp_cart.product.discounted_price
+        total = shipping_amount + amount
+
+        data = {
+            'quantity': c.quantity,
+            'amount': amount,
+            'total': total
+        }
+
+        return JsonResponse(data)
+
+def remove_cart(request):
+    if request.method == 'GET':
+        prod_id = request.GET['prod_id']
+        product = Product.objects.get(id=prod_id)
+        c = Cart.objects.get(Q(product=product) & Q(user=request.user))
+        c.delete()
+        cart = Cart.objects.filter(user=request.user)
+        amount = 0.0
+        shipping_amount = 40.0
+        total = 0.0
+        for temp_cart in cart:
+            amount += temp_cart.quantity*temp_cart.product.discounted_price
+        total = shipping_amount + amount
+
+        data = {
+            'amount': amount,
+            'total': total
+        }
+
+        return JsonResponse(data)
+
 
 
         
