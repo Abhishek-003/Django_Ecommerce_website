@@ -87,11 +87,21 @@ class CustomerRegistrationView(View):
 
 
 def checkout(request):
- return render(request, 'app/checkout.html')
+    user = request.user
+    add = Customer.objects.filter(user=user)
+    cart = Cart.objects.filter(user=user)
+    amount = 0.0
+    shipping_amount = 40.0
+    total = 0.0
+    for temp_cart in cart:
+        amount += temp_cart.quantity*temp_cart.product.discounted_price
+    total = shipping_amount + amount
+    return render(request, 'app/checkout.html', {'add':add, 'total':total, 'cart':cart})
 
 class ProfileView(View):
     def get(self, request):
         form = CustomerProfileForm()
+        
         return render(request, 'app/profile.html', {'form':form})
 
     def post(self, request):
