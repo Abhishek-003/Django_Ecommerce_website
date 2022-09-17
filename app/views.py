@@ -29,10 +29,12 @@ def product_detail(request, pk):
     product = Product.objects.get(pk=pk)
     if request.user.is_authenticated:
         item_already_in_cart = Cart.objects.filter(Q(product=product) & Q(user=request.user)).exists()
+        total_item = len(Cart.objects.filter(user=request.user))
     else:
         item_already_in_cart = False
+        total_item = 0
 
-    return render(request, 'app/productdetail.html', {'product':product, 'item_already_in_cart':item_already_in_cart})
+    return render(request, 'app/productdetail.html', {'product':product, 'item_already_in_cart':item_already_in_cart, 'total_item':total_item})
 
 @login_required
 def add_to_cart(request):
@@ -51,8 +53,9 @@ def show_cart(request):
     if request.user.is_authenticated:
         user = request.user
         cart = Cart.objects.filter(user=user)
-        if not cart:
-            return render(request, 'app/empty.html')
+        total_item = len(cart)
+        if not total_item:
+            return render(request, 'app/empty.html', {'total_item':total_item})
         amount = 0.0
         shipping_amount = 40.0
         total = 0.0
@@ -60,19 +63,21 @@ def show_cart(request):
             amount += temp_cart.quantity*temp_cart.product.discounted_price
         total = shipping_amount + amount
 
-        return render(request, 'app/addtocart.html', {'carts':cart, 'amount':amount, 'shipping_amount':shipping_amount, 'total':total})
+        return render(request, 'app/addtocart.html', {'carts':cart, 'amount':amount, 'shipping_amount':shipping_amount, 'total':total, 'total_item':total_item})
 
 def buy_now(request):
  return render(request, 'app/buynow.html')
 
 def address(request):
  add = Customer.objects.filter(user=request.user)
- return render(request, 'app/address.html', {'add': add})
+ total_item = len(Cart.objects.filter(user=request.user))
+ return render(request, 'app/address.html', {'add': add, 'total_item':total_item})
 
 @login_required
 def orders(request):
     op = OrderPlaced.objects.filter(user=request.user)
-    return render(request, 'app/orders.html', {'orders':op})
+    total_item = len(Cart.objects.filter(user=request.user))
+    return render(request, 'app/orders.html', {'orders':op, 'total_item':total_item})
 
 def mobile(request, data=None):
     if data is None:
@@ -83,8 +88,63 @@ def mobile(request, data=None):
         mobiles = Product.objects.filter(category='M').filter(discounted_price__gt=10000)
     else:
         mobiles = Product.objects.filter(category='M').filter(brand=data)
+    
+    if request.user.is_authenticated:
+        total_item = len(Cart.objects.filter(user=request.user))
+    else:
+        total_item = 0
 
-    return render(request, 'app/mobile.html', {'mobiles':mobiles})
+    return render(request, 'app/mobile.html', {'mobiles':mobiles, 'total_item':total_item})
+
+def laptop(request, data=None):
+    if data is None:
+        laptops = Product.objects.filter(category='L')
+    elif data == 'below':
+        laptops = Product.objects.filter(category='L').filter(discounted_price__lt=40000)
+    elif data == 'above':
+        laptops = Product.objects.filter(category='L').filter(discounted_price__gt=40000)
+    else:
+        laptops = Product.objects.filter(category='L').filter(brand=data)
+    
+    if request.user.is_authenticated:
+        total_item = len(Cart.objects.filter(user=request.user))
+    else:
+        total_item = 0
+
+    return render(request, 'app/laptop.html', {'laptops':laptops, 'total_item':total_item})
+
+def bottomwear(request, data=None):
+    if data is None:
+        bottomwears = Product.objects.filter(category='BW')
+    elif data == 'below':
+        bottomwears = Product.objects.filter(category='BW').filter(discounted_price__lt=600)
+    elif data == 'above':
+        bottomwears = Product.objects.filter(category='BW').filter(discounted_price__gt=600)
+    else:
+        bottomwears = Product.objects.filter(category='BW').filter(brand=data)
+    
+    if request.user.is_authenticated:
+        total_item = len(Cart.objects.filter(user=request.user))
+    else:
+        total_item = 0
+    return render(request, 'app/bottomwear.html', {'bottomwears':bottomwears, 'total_item':total_item})
+
+def topwear(request, data=None):
+    if data is None:
+        topwears = Product.objects.filter(category='TW')
+    elif data == 'below':
+        topwears = Product.objects.filter(category='TW').filter(discounted_price__lt=600)
+    elif data == 'above':
+        topwears = Product.objects.filter(category='TW').filter(discounted_price__gt=600)
+    else:
+        topwears = Product.objects.filter(category='TW').filter(brand=data)
+    
+    if request.user.is_authenticated:
+        total_item = len(Cart.objects.filter(user=request.user))
+    else:
+        total_item = 0
+
+    return render(request, 'app/topwear.html', {'topwears':topwears, 'total_item':total_item})
 
 
 class CustomerRegistrationView(View):
@@ -129,8 +189,9 @@ def payment_done(request):
 class ProfileView(View):
     def get(self, request):
         form = CustomerProfileForm()
+        total_item = len(Cart.objects.filter(user=request.user))
         
-        return render(request, 'app/profile.html', {'form':form})
+        return render(request, 'app/profile.html', {'form':form, 'total_item':total_item})
 
     def post(self, request):
         form = CustomerProfileForm(request.POST)
