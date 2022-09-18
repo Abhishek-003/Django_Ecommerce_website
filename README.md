@@ -19,5 +19,5 @@ This django powered website provides all the necessary features of a ecommerce w
 
 ## Screenshots
 
-![App Screenshot](https://drive.google.com/file/d/1xBBox8w-CeneN6K7ocRtwguR4K82F3Z9/view?usp=sharing)
+<img src="https://drive.google.com/file/d/1xBBox8w-CeneN6K7ocRtwguR4K82F3Z9/view?usp=sharing" alt="Girl in a jacket" width="500" height="600">
 
