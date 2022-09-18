@@ -35,6 +35,6 @@ This django powered website provides all the necessary features of a ecommerce w
 
 
 ### Adding and removing product from cart demo
-![2022-09-18-14-43-38-online-video-cuttercom_Bzs5j5s0__1__AdobeExpress](https://user-images.githubusercontent.com/57343950/190896509-f00271fa-e111-458b-976d-dc892ed1b0a5.gif)
+![2022-09-18-14-43-38-online-video-cuttercom_Bzs5j5s0 (1) (1)](https://user-images.githubusercontent.com/57343950/190897014-235a84d2-51d6-4bde-a0e4-b4211e6ef7bf.gif)
 
 
