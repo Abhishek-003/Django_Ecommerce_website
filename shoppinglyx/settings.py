@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ca#vh^gn=t_a8$*b^xa4x#=^!(s3nvjx1r@nwx!a8f*nig4#w%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['skabhishek-shopinglyx.herokuapp.com', '127.0.0.1']
 
@@ -117,13 +117,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_REDIRECT_URL = '/profile/'
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -140,4 +139,3 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "thugsofbengal001@gmail.com"
 EMAIL_HOST_PASSWORD = "odebsfummuydqlis"
-
